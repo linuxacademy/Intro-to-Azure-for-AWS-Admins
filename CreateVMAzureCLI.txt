@@ -1,0 +1,32 @@
+#Create Azure Linux VM running Ubuntu webserver
+
+#Set Variables
+$rg = (Get-AzResourceGroup).ResourceGroupName
+$vm = "LabVM"
+
+#Create Azure Linux VM with Ubuntu image
+az vm create `
+-g $rg `
+-n $vm `
+--image "UbuntuLTS" `
+--admin-username "azureuser" `
+--generate-ssh-keys
+
+##Notice we did not specify location via the --location paramter and that means the resources created will inherit the location of the resource group.
+
+#Open port 80 on VM
+az vm open-port `
+-g $rg `
+-n $vm `
+--port 80
+
+#Connect to VM
+ssh azureuser@<Public_IP_Address> #Use The public IP of your Virtual Machine
+
+#Update Package Lists
+sudo apt-get update -y
+
+# Install Nginx webserver
+sudo apt-get install nginx -y
+
+##Visit Public IP Address of VM in browser of your choice to check the webserver.
